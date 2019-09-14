@@ -112,6 +112,7 @@ public class Calculator {
                 second = endNumbers[1+i];
             }
 
+
             if(operators.charAt(i) == '/'){ // Division
                 result = first / second;
             }
@@ -126,8 +127,10 @@ public class Calculator {
             }
 
         }
+        double temp = (double) Math.round(result * 10000.0)/10000.0;
 
-        calculationString = Float.toString(result);
+
+        calculationString = Float.toString((float)temp);
 
         Log.i(TAG, "calculation string : "+calculationString);
 

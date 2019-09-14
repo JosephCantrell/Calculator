@@ -21,6 +21,8 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
     private ViewGroup buttonGrid;
     private TextView CalculatorText;
 
+    private int textSize = 50;
+
     CalculatorPresenter presenter = new CalculatorPresenter(this);
 
     @Override
@@ -65,10 +67,28 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
     }
 
     public void setCalculatorText(String text){
+        int textLength = text.length();
+        if(textLength > 13 && textLength < 20)
+        {
+            setCalculatorTextSize(textSize-((textLength%13)*3));
+        }
+        else if(textLength >= 20)
+        {
+            setCalculatorTextSize(29);
+        }
+        else
+        {
+            setCalculatorTextSize(textSize);
+        }
         CalculatorText.setText(text);
     }
 
     void clearCalculatorText(){
+        textSize = 50;
         CalculatorText.setText("0");
+    }
+
+    public void setCalculatorTextSize(int i){
+        CalculatorText.setTextSize(i);
     }
 }
