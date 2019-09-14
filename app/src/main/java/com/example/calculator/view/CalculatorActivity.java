@@ -56,9 +56,9 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
         return true;
     }
 
-    void onClick(View v)
+    public void onClick(View view)
     {
-        Button button = (Button) v;
+        Button button = (Button) view;
         String tag = button.getTag().toString();
         Log.i(TAG, "User Clicked " + tag);
         presenter.onButtonClicked(tag);
@@ -69,6 +69,6 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
     }
 
     void clearCalculatorText(){
-        CalculatorText.setText('0');
+        CalculatorText.setText("0");
     }
 }

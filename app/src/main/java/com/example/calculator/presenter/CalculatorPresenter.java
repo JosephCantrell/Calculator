@@ -39,7 +39,7 @@ public class CalculatorPresenter implements Presenter {
     }
 
     public void onButtonClicked(String tag){
-        String ValidChars = "CSB/*+-.=0123456789";
+        String ValidChars = "C~BD/*+-.=0123456789";
         int index = ValidChars.indexOf(tag);
         if(index == -1){    // NOT A VALID CHAR
             Log.i(TAG, "Incorect Char Recieved: " + tag);

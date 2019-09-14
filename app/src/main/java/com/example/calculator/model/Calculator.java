@@ -3,8 +3,8 @@ package com.example.calculator.model;
 import android.util.Log;
 
 public class Calculator {
-    private String calculationString;
-    private String Operators = "=CSB/*-+";
+    private String calculationString = "";
+    private String Operators = "=C~B/*-+";
     private String Numbers = "0123456789.";
 
     private static String TAG = Calculator.class.getName();     // For console information
@@ -13,18 +13,28 @@ public class Calculator {
     public void recieveInformation(String tag){
 
         int index = Operators.indexOf(tag);
-        if(index == -1) // NOT AN OPERATOR
-        {
-            calculationString = calculationString + tag;        // Add the sent tag to the current string of calculations
-        }
+
         if(tag.equals("=")){
-            equals();
+            if(calculationString.contains("Infinity")) {
+                Log.i(TAG, "User must clear");
+                calculationString = "Infinity";
+            }
+            else if(calculationString.contains("NaN")){
+                Log.i(TAG, "User must clear");
+                calculationString = "NaN";
+            }
+            else
+                equals();
         }
-        if(tag.equals("D")){        // Delete the last char
+        else if(tag.equals("D")){        // Delete the last char
             delete();
         }
-        if(tag.equals("C")){
+        else if(tag.equals("C")){
             clear();
+        }
+        else
+        {
+            calculationString = calculationString + tag;        // Add the sent tag to the current string of calculation
         }
     }
 
@@ -36,62 +46,92 @@ public class Calculator {
         }
     }
 
-    void equals()
+    boolean equals()
     {
-        boolean number = false;
+        if(calculationString == "Infinity")
+        {
+            return false;
+        }
+        if(calculationString.length()< 3)
+            return false;
         int arrayNum = 0;
-        int arrayPos = 0;
-        float numbers[];
+        String numbers[];
+        int signChange[];
         String operators = "";
         float result = 0;
-        numbers = new float [calculationString.length()]; // We will never have more numbers to calculate than the length of the string
+        float endNumbers[];
+        endNumbers = new float [calculationString.length()];
+        numbers = new String [calculationString.length()]; // We will never have more numbers to calculate than the length of the string
+        signChange = new int [calculationString.length()];
+        for(int i = 0; i < calculationString.length();i++) {        // Initializing the numbers array with values of zero
+            numbers[i] = "0";
+            signChange[i] = 0;
+            endNumbers[i] = 0;
+        }
+
+
         for(int i = 0; i < calculationString.length();i++) {
             int index = Operators.indexOf(calculationString.charAt(i)); // If we have an operator in this position we are looking at
-            if (index == -1) // if it is not an operator, add the number to the numbers array
+
+            if (index == -1 || index == 2) // if it is not an operator, add the number to the numbers array
             {
-                numbers[arrayNum] = calculationString.charAt(i);   // Adding to the numbers array
+                if(index == 2) { // Sign change
+                    signChange[arrayNum] = 1;
+                }
+                if(index == -1) {
+                    numbers[arrayNum] = numbers[arrayNum] + calculationString.charAt(i);   // Adding to the numbers array
+                }
             } else {
                 operators = operators + Operators.charAt(index);
                 arrayNum++;
             }
         }
 
+        for(int i = 0; i < numbers.length; i++){
+            endNumbers[i] = Float.valueOf(numbers[i]);
+        }
+
+        for(int i = 0; i < signChange.length; i++){
+            if(signChange[i] == 1) {
+                endNumbers[i] = -1* endNumbers[i];    // Flip the sign of the number
+            }
+        }
+
+
         for(int i = 0; i < operators.length(); i++){    // Combining the array list and operator list
             float first = 0;
             float second = 0;
 
-            first = numbers[2*i];
-            second = numbers[(2*i)+1];
-
-            Log.i(TAG, "First number is: "+first);
-            Log.i(TAG, "Second number is: "+second);
+            if(i == 0) {
+                first = endNumbers[2 * i];
+                second = endNumbers[(2 * i) + 1];
+            }
+            else
+            {
+                first = result;
+                second = endNumbers[1+i];
+            }
 
             if(operators.charAt(i) == '/'){ // Division
-                result = result + (first / second);
-                Log.i(TAG, "Operator in position "+i+" is /");
-                Log.i(TAG, "Result: "+result);
+                result = first / second;
             }
             if(operators.charAt(i) == '*'){ // Multiply
-                result = result + (first * second);
-                Log.i(TAG, "Operator in position "+i+" is *");
-                Log.i(TAG, "Result: "+result);
+                result = first * second;
             }
             if(operators.charAt(i) == '-'){ // Subtract
-                result = result + (first - second);
-                Log.i(TAG, "Operator in position "+i+" is -");
-                Log.i(TAG, "Result: "+result);
+                result = first - second;
             }
             if(operators.charAt(i) == '+'){ // Add
-                result = result + (first + second);
-                Log.i(TAG, "Operator in position "+i+" is +");
-                Log.i(TAG, "Result: "+result);
+                result = first + second;
             }
 
         }
 
         calculationString = Float.toString(result);
 
-        Log.i(TAG, "Calculation result: "+result);
+        Log.i(TAG, "calculation string : "+calculationString);
+
+        return true;
 
 
     }
