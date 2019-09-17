@@ -38,40 +38,46 @@ public class Calculator {
             boolean foundOperator = false;
             boolean foundNegative = false;
             boolean endOfString = false;
-            for(int i = calculationString.length()-1; Stop == false || i > 0; i--){
-                int indexOperators = Operators.indexOf(calculationString.charAt(i));
-                Log.i(TAG, "Index at "+i+" is "+indexOperators);
-                Log.i(TAG, "Item at i is :" +calculationString.charAt(i));
-                if(indexOperators == 6){        // If we found a negative, Remove the negative
-                    Log.i(TAG, "Found negative");
-                    String tempString = calculationString.substring(0,i) + "" + calculationString.substring(i+1);
-                    calculationString = tempString;
-                    foundNegative = true;
-                    Stop = true;
-                }
-                if(indexOperators != -1){       // If we found an operator
-                    if(foundNegative){
+            if(calculationString.length() == 0){
 
-                    }
-                    else {
-                        calculationString = calculationString.substring(0, i+1) + "-" + calculationString.substring(i+1);
-                        Log.i(TAG, "Found operator");
-                        foundOperator = true;
+            }
+            else {
+                for (int i = calculationString.length() - 1; Stop == false || i > 0; i--) {
+                    int indexOperators = Operators.indexOf(calculationString.charAt(i));
+                    Log.i(TAG, "Index at " + i + " is " + indexOperators);
+                    Log.i(TAG, "Item at i is :" + calculationString.charAt(i));
+                    if (indexOperators == 2) {        // If we found a negative, Remove the negative
+                        Log.i(TAG, "Found negative");
+                        String tempString = calculationString.substring(0, i) + "" + calculationString.substring(i + 1);
+                        calculationString = tempString;
+                        foundNegative = true;
                         Stop = true;
-                        break;
                     }
-                }
-                if(i == 0){
-                    if(foundNegative){
+                    if (indexOperators != -1) {       // If we found an operator
+                        if (foundNegative) {
 
+                        } else {
+                            calculationString = calculationString.substring(0, i + 1) + "-" + calculationString.substring(i + 1);
+                            Log.i(TAG, "Found operator");
+                            foundOperator = true;
+                            Stop = true;
+                            break;
+                        }
                     }
-                    else {
-                        calculationString = "-" + calculationString;
-                        Log.i(TAG, "End of calculation string, adding negative");
-                        Stop = true;
+                    if (i == 0) {
+                        if (foundNegative) {
+
+                        } else {
+                            calculationString = "-" + calculationString;
+                            Log.i(TAG, "End of calculation string, adding negative");
+                            Stop = true;
+                        }
                     }
                 }
             }
+        }
+        else if(tag.equals("-")){
+            calculationString = calculationString + "+-";
         }
         else
         {
@@ -115,6 +121,8 @@ public class Calculator {
             }
 
             else
+                if(calculationString.equals("0")&& !tag.equals("0"))
+                    calculationString = "";
                 calculationString = calculationString + tag;        // Add the sent tag to the current string of calculation
         }
     }
@@ -123,15 +131,20 @@ public class Calculator {
 
     private void delete(){
 
-        for(int i = 0; i < calculationString.length(); i++) {
-            int index = Numbers.indexOf(calculationString.charAt(i));
-            if(index == -1){        // The char at i is not a number, delete the whole string
-                clear();
-            }
+        if(calculationString.equals("0")){
+            calculationString = "0";
         }
+        else {
+            for (int i = 0; i < calculationString.length(); i++) {
+                int index = Numbers.indexOf(calculationString.charAt(i));
+                if (index == -1) {        // The char at i is not a number, delete the whole string
+                    clear();
+                }
+            }
 
-        if(calculationString.length()>0){
-            calculationString = calculationString.substring(0, calculationString.length()-1);   // Removes the last position
+            if (calculationString.length() > 0) {
+                calculationString = calculationString.substring(0, calculationString.length() - 1);   // Removes the last position
+            }
         }
 
     }
@@ -166,19 +179,8 @@ public class Calculator {
 
             if (index == -1 || index == 2) // if it is not an operator, add the number to the numbers array
             {
-                Log.i(TAG, "In if statement");
-                if(index == 2) {
-                    Log.i(TAG, "In index if statement");
-                    int signIndex = Operators.indexOf(calculationString.charAt(i+1));
-                    if(signIndex == 2){             // Double negative (subtracting a negative)
-                        numbers[arrayNum] = "-" + numbers[arrayNum];
-                        Log.i(TAG, "numbers["+arrayNum+"] = "+numbers[arrayNum]);
-                        //calculationString = calculationString.substring(0,i) + "" + calculationString.substring(i+1);
-                        doubleNegative = true;
-                    }
-                    if(!doubleNegative && signIndex != 2){       // If there is only a single negative sign and we did not find a double negative
-                        numbers[arrayNum] = "-" + numbers[arrayNum];
-                    }
+                if(index == 2){
+                    numbers[arrayNum] = "-"+numbers[arrayNum];
                 }
                 if(index == -1) {
                     numbers[arrayNum] = numbers[arrayNum] + calculationString.charAt(i);   // Adding to the numbers array
@@ -190,11 +192,14 @@ public class Calculator {
         }
 
         for(int i = 0; i < numbers.length; i++){
-            //Log.i(TAG, "numbers["+i+"] = "+numbers[i]);
+            Log.i(TAG, "numbers["+i+"] = "+numbers[i]);
             endNumbers[i] = Double.parseDouble(numbers[i]);
             Log.i(TAG, "endNumbers["+i+"] = "+endNumbers[i]);
 
         }
+
+
+        Log.i(TAG, "calculation string: "+calculationString);
 
 
         for(int i = 0; i < operators.length(); i++){    // Combining the array list and operator list
@@ -220,9 +225,9 @@ public class Calculator {
             if(operators.charAt(i) == '*'){ // Multiply
                 result = first * second;
             }
-            if(operators.charAt(i) == '-'){ // Subtract
-                result = first - second;
-            }
+            //if(operators.charAt(i) == '-'){ // Subtract
+            //    result = first - second;
+            //}
             if(operators.charAt(i) == '+'){ // Add
                 result = first + second;
             }
@@ -244,6 +249,6 @@ public class Calculator {
 
     private void clear()
     {
-        calculationString = "";
+        calculationString = "0";
     }
 }
