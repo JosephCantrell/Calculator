@@ -1,6 +1,4 @@
 package com.example.calculator.model;
-
-import android.graphics.Path;
 import android.util.Log;
 
 public class Calculator {
@@ -16,11 +14,11 @@ public class Calculator {
         int index = Operators.indexOf(tag);
 
         if(tag.equals("=")){
-            if(calculationString.contains("Infinity")) {
+            if(calculationString.contains("Infinity")) {            // Simple case situations. If the user attempts to do math with the Infinity result, the result will just be infinity. Does not crash
                 Log.i(TAG, "User must clear");
                 calculationString = "Infinity";
             }
-            else if(calculationString.contains("NaN")){
+            else if(calculationString.contains("NaN")){             // Same as the infinity result. Cannot do math with NaN. Just returns NaN
                 Log.i(TAG, "User must clear");
                 calculationString = "NaN";
             }
@@ -42,13 +40,10 @@ public class Calculator {
 
             }
             else {
-                for (int i = calculationString.length() - 1; Stop == false || i > 0; i--) {
+                for (int i = calculationString.length() - 1; Stop == false || i > 0; i--) {     // Just works for flipping the signs
                     int indexOperators = Operators.indexOf(calculationString.charAt(i));
-                    Log.i(TAG, "Index at " + i + " is " + indexOperators);
-                    Log.i(TAG, "Item at i is :" + calculationString.charAt(i));
                     if (indexOperators == 2) {        // If we found a negative, Remove the negative
-                        Log.i(TAG, "Found negative");
-                        String tempString = calculationString.substring(0, i) + "" + calculationString.substring(i + 1);
+                        String tempString = calculationString.substring(0, i) + "" + calculationString.substring(i + 1);        // If we find a negative sign, we delete it
                         calculationString = tempString;
                         foundNegative = true;
                         Stop = true;
@@ -57,8 +52,7 @@ public class Calculator {
                         if (foundNegative) {
 
                         } else {
-                            calculationString = calculationString.substring(0, i + 1) + "-" + calculationString.substring(i + 1);
-                            Log.i(TAG, "Found operator");
+                            calculationString = calculationString.substring(0, i + 1) + "-" + calculationString.substring(i + 1);       // If we find an operator, we add in a negative sign
                             foundOperator = true;
                             Stop = true;
                             break;
@@ -68,8 +62,7 @@ public class Calculator {
                         if (foundNegative) {
 
                         } else {
-                            calculationString = "-" + calculationString;
-                            Log.i(TAG, "End of calculation string, adding negative");
+                            calculationString = "-" + calculationString;        // Adding in the negative sign
                             Stop = true;
                         }
                     }
@@ -88,17 +81,13 @@ public class Calculator {
                 boolean foundDecimal = false;
                 boolean foundOperator = false;
 
-                Log.i(TAG, "Post boolean creation");
-                for(int i = calculationString.length()-1; skipTheRest == false || i > 0; i--){
-                    Log.i(TAG, "In for loop. I:"+i);
+                for(int i = calculationString.length()-1; skipTheRest == false || i > 0; i--){          // Just works. Took awhile to get this to work.
                     int indexNumbers = Numbers.indexOf(calculationString.charAt(i));
-                    Log.i(TAG, "Char at "+i+" is "+calculationString.charAt(i));
                     if(indexNumbers == -1){         // We have reached the end of the number we are looking at (we hit an operator)
                         skipTheRest = true;
                         foundOperator = true;
                         if(!foundDecimal)               // If we found a decimal and an operator, do not add the decimal. if we did not find a decimal but we have reached the end (an operator), add the decimal
                             addDecimal = true;
-                        Log.i(TAG, "Hit an operator");
                         break;
                     }
                     else if(i <= 0)                  // We reached the end of the calculation string
@@ -106,14 +95,11 @@ public class Calculator {
                         skipTheRest = true;
                         if(!foundDecimal && !foundOperator) // If we have not found the decimal or operator (initial number) then add the decimal
                             addDecimal = true;
-                        Log.i(TAG, "End of the calculation string");
                     }
                     else if(indexNumbers == 10){         // There is already a decimal in the number we are looking at
                         skipTheRest = false;
                         foundDecimal = true;
-                        Log.i(TAG, "Found a decimal");
                     }
-                    Log.i(TAG, "Post decimal");
                 }
                 if(addDecimal){                     // If we get the add decimal boolean, Continue to add the decimal at the end of the calculationString.
                     calculationString = calculationString + tag;
@@ -129,20 +115,20 @@ public class Calculator {
 
     public String getString()  { return calculationString; }
 
-    private void delete(){
+    private void delete(){                          // Basic delete function
 
-        if(calculationString.equals("0")){
+        if(calculationString.equals("0")){          // If the user deletes the initial zero, the zero is printed again. Allows for the perpetual zero being printed
             calculationString = "0";
         }
         else {
-            for (int i = 0; i < calculationString.length(); i++) {
+            for (int i = 0; i < calculationString.length(); i++) {      // Stepping through the calculation string to find non numbers, such as E or infinity. If these are found, clear the entire string
                 int index = Numbers.indexOf(calculationString.charAt(i));
                 if (index == -1) {        // The char at i is not a number, delete the whole string
                     clear();
                 }
             }
 
-            if (calculationString.length() > 0) {
+            if (calculationString.length() > 0) {       // Else, just delete the last entry.
                 calculationString = calculationString.substring(0, calculationString.length() - 1);   // Removes the last position
             }
         }
@@ -168,21 +154,15 @@ public class Calculator {
             endNumbers[i] = 0;
         }
 
-        boolean firstDecimal = false;
-        boolean doubleNegative = false;
-
         for(int i = 0; i < calculationString.length();i++) {
             int index = Operators.indexOf(calculationString.charAt(i)); // If we have an operator in this position we are looking at
 
-            Log.i(TAG, "Char at "+i+" is "+calculationString.charAt(i));
-            Log.i(TAG, "index: "+index);
-
             if (index == -1 || index == 2) // if it is not an operator, add the number to the numbers array
             {
-                if(index == 2){
-                    numbers[arrayNum] = "-"+numbers[arrayNum];
+                if(index == 2){             // If we find a negative,
+                    numbers[arrayNum] = "-"+numbers[arrayNum];  // Add a negative sign infront of the current number in the array
                 }
-                if(index == -1) {
+                if(index == -1) {               // If we dont find any operators,
                     numbers[arrayNum] = numbers[arrayNum] + calculationString.charAt(i);   // Adding to the numbers array
                 }
             } else {
@@ -191,16 +171,9 @@ public class Calculator {
             }
         }
 
-        for(int i = 0; i < numbers.length; i++){
-            Log.i(TAG, "numbers["+i+"] = "+numbers[i]);
+        for(int i = 0; i < numbers.length; i++){        // Taking numbers from my string array and parsing them into double so we can properly do math with them. Stored in an array list.
             endNumbers[i] = Double.parseDouble(numbers[i]);
-            Log.i(TAG, "endNumbers["+i+"] = "+endNumbers[i]);
-
         }
-
-
-        Log.i(TAG, "calculation string: "+calculationString);
-
 
         for(int i = 0; i < operators.length(); i++){    // Combining the array list and operator list
             double first = 0;
@@ -233,10 +206,6 @@ public class Calculator {
             }
 
         }
-        //double temp = (double) Math.round(result * 10000.0)/10000.0;
-
-
-        //calculationString = Float.toString((float)temp);
 
         calculationString = Double.toString(result);
 
@@ -249,6 +218,6 @@ public class Calculator {
 
     private void clear()
     {
-        calculationString = "0";
+        calculationString = "0";            // Print out the initial zero when cleared
     }
 }
