@@ -39,23 +39,23 @@ public class CalculatorPresenter implements Presenter {
     }
 
     public void onButtonClicked(String tag){
-        String ValidChars = "C~BD/*+-.=0123456789";
+        String ValidChars = "CSBD/*+-.=0123456789";
         int index = ValidChars.indexOf(tag);
         if(index == -1){    // NOT A VALID CHAR
             Log.i(TAG, "Incorect Char Recieved: " + tag);
         }
         else
         {
-            model.recieveInformation(tag);
+            model.receiveInformation(tag);
             sendCalculation(getCalculation());
         }
     }
 
-    public String getCalculation(){
+    private String getCalculation(){
         return model.getString();
     }
 
-    public void sendCalculation(String calculation){
+    private void sendCalculation(String calculation){
         view.setCalculatorText(calculation);
     }
 }

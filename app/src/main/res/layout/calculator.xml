@@ -43,7 +43,7 @@
             android:layout_column="1"
             android:background="#00FFFFFF"
             android:onClick="onClick"
-            android:tag="~"
+            android:tag="S"
             android:text="@string/sign"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:visibility="visible" />

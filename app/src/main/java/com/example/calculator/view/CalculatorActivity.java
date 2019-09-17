@@ -1,13 +1,13 @@
 package com.example.calculator.view;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -18,7 +18,6 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
 
     private static String TAG = CalculatorActivity.class.getName();     // For console information
 
-    private ViewGroup buttonGrid;
     private TextView CalculatorText;
 
     private int textSize = 50;
@@ -29,8 +28,8 @@ public class CalculatorActivity extends AppCompatActivity implements CalculatorV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calculator);
-        buttonGrid = (ViewGroup) findViewById(R.id.buttonGrid);
-        CalculatorText = (TextView) findViewById(R.id.CalculatorText);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        CalculatorText = findViewById(R.id.CalculatorText);
         clearCalculatorText();
     }
 
