@@ -4,7 +4,15 @@ import android.util.Log;
 public class Calculator {
     private String calculationString = "";
     private String Operators = "=C-B/*+";
+    private String JustOperators = "/*-+";
     private String Numbers = "0123456789.";
+
+    private boolean decimalPlaced = false;
+    private boolean dividePlaced = false;
+    private boolean multiplyPlaced = false;
+    private boolean subtracionPlaced = false;
+    private boolean additionPlaced = false;
+    private boolean operatorPlaced = false;
 
     private static String TAG = Calculator.class.getName();     // For console information
 
@@ -13,125 +21,194 @@ public class Calculator {
 
         int index = Operators.indexOf(tag);
 
-        if(tag.equals("=")){
-            if(calculationString.contains("Infinity")) {            // Simple case situations. If the user attempts to do math with the Infinity result, the result will just be infinity. Does not crash
-                Log.i(TAG, "User must clear");
-                calculationString = "Infinity";
-            }
-            else if(calculationString.contains("NaN")){             // Same as the infinity result. Cannot do math with NaN. Just returns NaN
-                Log.i(TAG, "User must clear");
-                calculationString = "NaN";
-            }
-            else
-                equals();
-        }
-        else if(tag.equals("D")){        // Delete the last char
-            delete();
-        }
-        else if(tag.equals("C")){
-            clear();
-        }
-        else if(tag.equals("S")){
-            boolean Stop = false;
-            boolean foundOperator = false;
-            boolean foundNegative = false;
-            boolean endOfString = false;
-            if(calculationString.length() == 0){
-
-            }
-            else {
-                for (int i = calculationString.length() - 1; Stop == false || i > 0; i--) {     // Just works for flipping the signs
-                    int indexOperators = Operators.indexOf(calculationString.charAt(i));
-                    if (indexOperators == 2) {        // If we found a negative, Remove the negative
-                        String tempString = calculationString.substring(0, i) + "" + calculationString.substring(i + 1);        // If we find a negative sign, we delete it
-                        calculationString = tempString;
-                        foundNegative = true;
-                        Stop = true;
-                    }
-                    if (indexOperators != -1) {       // If we found an operator
-                        if (foundNegative) {
-
-                        } else {
-                            calculationString = calculationString.substring(0, i + 1) + "-" + calculationString.substring(i + 1);       // If we find an operator, we add in a negative sign
-                            foundOperator = true;
-                            Stop = true;
-                            break;
-                        }
-                    }
-                    if (i == 0) {
-                        if (foundNegative) {
-
-                        } else {
-                            calculationString = "-" + calculationString;        // Adding in the negative sign
-                            Stop = true;
-                        }
-                    }
-                }
-            }
-        }
-        else if(tag.equals("-")){
-            calculationString = calculationString + "+-";
-        }
-        else
+        switch(tag)
         {
-            if(tag.equals("."))
+            case "=":
             {
-                boolean skipTheRest = false;
-                boolean addDecimal = false;
-                boolean foundDecimal = false;
-                boolean foundOperator = false;
-
-                for(int i = calculationString.length()-1; skipTheRest == false || i > 0; i--){          // Just works. Took awhile to get this to work.
-                    int indexNumbers = Numbers.indexOf(calculationString.charAt(i));
-                    if(indexNumbers == -1){         // We have reached the end of the number we are looking at (we hit an operator)
-                        skipTheRest = true;
-                        foundOperator = true;
-                        if(!foundDecimal)               // If we found a decimal and an operator, do not add the decimal. if we did not find a decimal but we have reached the end (an operator), add the decimal
-                            addDecimal = true;
-                        break;
-                    }
-                    else if(i <= 0)                  // We reached the end of the calculation string
-                    {
-                        skipTheRest = true;
-                        if(!foundDecimal && !foundOperator) // If we have not found the decimal or operator (initial number) then add the decimal
-                            addDecimal = true;
-                    }
-                    else if(indexNumbers == 10){         // There is already a decimal in the number we are looking at
-                        skipTheRest = false;
-                        foundDecimal = true;
-                    }
+                decimalPlaced = false;
+                if(calculationString.contains("Infinity")) {            // Simple case situations. If the user attempts to do math with the Infinity result, the result will just be infinity. Does not crash
+                    Log.i(TAG, "User must clear");
+                    calculationString = "Infinity";
                 }
-                if(addDecimal){                     // If we get the add decimal boolean, Continue to add the decimal at the end of the calculationString.
-                    calculationString = calculationString + tag;
+                else if(calculationString.contains("NaN")){             // Same as the infinity result. Cannot do math with NaN. Just returns NaN
+                    Log.i(TAG, "User must clear");
+                    calculationString = "NaN";
                 }
+                else
+                    equals();
+                break;
             }
+            case "D":
+            {
 
-            else
-                if(calculationString.equals("0")&& !tag.equals("0"))
+                delete();
+                break;
+            }
+            case "C":
+            {
+                decimalPlaced = false;
+                clear();
+                break;
+            }
+            case "S":
+            {
+                boolean Stop = false;
+                boolean foundOperator = false;
+                boolean foundNegative = false;
+                boolean endOfString = false;
+                if(calculationString.length() == 0){
+
+                }
+                else {
+                    for (int i = calculationString.length() - 1; Stop == false || i > 0; i--) {     // Just works for flipping the signs
+                        int indexOperators = Operators.indexOf(calculationString.charAt(i));
+                        if (indexOperators == 2) {        // If we found a negative, Remove the negative
+                            String tempString = calculationString.substring(0, i) + "" + calculationString.substring(i + 1);        // If we find a negative sign, we delete it
+                            calculationString = tempString;
+                            foundNegative = true;
+                            Stop = true;
+                        }
+                        if (indexOperators != -1) {       // If we found an operator
+                            if (foundNegative) {
+
+                            } else {
+                                calculationString = calculationString.substring(0, i + 1) + "-" + calculationString.substring(i + 1);       // If we find an operator, we add in a negative sign
+                                foundOperator = true;
+                                Stop = true;
+                                break;
+                            }
+                        }
+                        if (i == 0) {
+                            if (foundNegative) {
+
+                            } else {
+                                calculationString = "-" + calculationString;        // Adding in the negative sign
+                                Stop = true;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            case "-":
+            {
+                if(operatorPlaced){
+                    Log.i(TAG, "User attempted to apply a second subtraction");
+                }
+                else
+                {
+                    if(calculationString.equals("")){
+                        calculationString = "-";
+                    }
+                    else{
+                    calculationString = calculationString + "+-";
+                    operatorPlaced = true;
+
+                    }
+                }
+                decimalPlaced = false;
+                break;
+            }
+            case ".":
+            {
+                if(decimalPlaced){
+                    Log.i(TAG, "Decimal already placed, skipping");
+                }
+                else
+                {
+                    calculationString = calculationString + tag;
+                    decimalPlaced = true;
+                }
+                break;
+            }
+            case "+":
+            {
+                if(operatorPlaced){
+                    Log.i(TAG, "User attempted to place a second addition symbol");
+                }
+                else
+                {
+                    calculationString = calculationString + tag;
+                    operatorPlaced = true;
+                }
+                decimalPlaced = false;
+                break;
+            }
+            case "*":
+            {
+                if(operatorPlaced){
+                    Log.i(TAG, "User attempted to place a second multiplication symbol");
+                }
+                else
+                {
+                    calculationString = calculationString + tag;
+                    operatorPlaced = true;
+                }
+                decimalPlaced = false;
+                break;
+            }
+            case "/":
+            {
+                if(operatorPlaced){
+                    Log.i(TAG, "User attempted to place a second division symbol");
+                }
+                else
+                {
+                    calculationString = calculationString + tag;
+                    operatorPlaced = true;
+                }
+                decimalPlaced = false;
+                break;
+            }
+            default:
+            {
+                if(calculationString.equals("0"))
                     calculationString = "";
                 calculationString = calculationString + tag;        // Add the sent tag to the current string of calculation
+                operatorPlaced = false;
+                break;
+            }
         }
-    }
+
+            }
 
     public String getString()  { return calculationString; }
 
     private void delete(){                          // Basic delete function
 
-        if(calculationString.equals("0")){          // If the user deletes the initial zero, the zero is printed again. Allows for the perpetual zero being printed
-            calculationString = "0";
-        }
-        else {
-            for (int i = 0; i < calculationString.length(); i++) {      // Stepping through the calculation string to find non numbers, such as E or infinity. If these are found, clear the entire string
-                int index = Numbers.indexOf(calculationString.charAt(i));
-                if (index == -1) {        // The char at i is not a number, delete the whole string
-                    clear();
-                }
-            }
 
-            if (calculationString.length() > 0) {       // Else, just delete the last entry.
+        if(!calculationString.isEmpty()) {
+            if (calculationString.charAt(calculationString.length() - 1) == '.') {
+                decimalPlaced = false;
+            } else if (calculationString.charAt(calculationString.length() - 1) == '/') {
+                operatorPlaced = false;
+            } else if (calculationString.charAt(calculationString.length() - 1) == '*') {
+                operatorPlaced = false;
+            } else if (calculationString.charAt(calculationString.length() - 1) == '-') {
+                operatorPlaced = false;
+            } else if (calculationString.charAt(calculationString.length() - 1) == '+') {
+                operatorPlaced = false;
+            }
+        }
+
+        for (int i = 0; i < calculationString.length(); i++) {      // Stepping through the calculation string to find non numbers, such as E or infinity. If these are found, clear the entire string
+            int numberIndex = Numbers.indexOf(calculationString.charAt(i));
+            int operatorIndex = JustOperators.indexOf(calculationString.charAt(i));
+            if (numberIndex == -1 && operatorIndex == -1) {        // The char at i is not a number, delete the whole string
+                clear();
+            }
+        }
+
+        if(!calculationString.isEmpty()) {
+            if (calculationString.equals("0")) {          // If the user deletes the initial zero, the zero is printed again. Allows for the perpetual zero being printed
+                calculationString = "0";
+            } else if (calculationString.length() > 0) {       // Else, just delete the last entry.
                 calculationString = calculationString.substring(0, calculationString.length() - 1);   // Removes the last position
             }
         }
+
+
+        Log.i(TAG, "Calculation string after delete: "+calculationString);
 
     }
 
